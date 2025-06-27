@@ -30,8 +30,11 @@ export interface RegisterData {
   status: string;
 }
 
-export const loginUser = async (matricula: string, password: string): Promise<LoginResponse> => {
-  const response = await axios.post<LoginResponse>(`${API_URL}/login/alumnos`, { matricula, password });
+export const loginUser = async (matricula: string, password: string, captcha: string): Promise<LoginResponse> => {
+  const response = await axios.post<LoginResponse>(`${API_URL}/login`, { 
+    matricula, 
+    password, 
+    captcha });
   return response.data;
 };
 
