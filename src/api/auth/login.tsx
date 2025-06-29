@@ -56,6 +56,6 @@ export interface User {
 }
 
 export const getAllUsers = async (): Promise<User[]> => {
-  const response = await axios.get<{ userList: User[] }>(`${API_URL}/alumnos/getUser`);
+  const response = await axios.get<{ userList: User[] }>(`${API_URL}/getUser`);
   return response.data.userList;
 };
