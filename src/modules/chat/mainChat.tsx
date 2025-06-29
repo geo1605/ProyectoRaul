@@ -1,27 +1,6 @@
-import React, { useState } from 'react';
-import { Table, Button, Modal, Input, Form } from 'antd';
-
-// Datos de ejemplo del historial
-const historialData = [
-  {
-    key: '1',
-    remitente: 'Juan Pérez',
-    mensaje: 'Hola, ¿cómo estás?',
-    fecha: '2025-06-26 10:00',
-  },
-  {
-    key: '2',
-    remitente: 'Ana García',
-    mensaje: '¿Vamos a la reunión a las 3?',
-    fecha: '2025-06-26 11:30',
-  },
-  {
-    key: '3',
-    remitente: 'Luis Martínez',
-    mensaje: 'Estoy esperando tu confirmación.',
-    fecha: '2025-06-25 09:45',
-  },
-];
+import React, { useState, useEffect } from 'react';
+import { Table, Button, Modal, Input, Form, message as antMessage } from 'antd';
+import { enviarMensaje, obtenerMisMensajes } from '../../api/chat/chat';
 
 const MainChat = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -29,38 +8,59 @@ const MainChat = () => {
   const [modalMessage, setModalMessage] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const [matricula, setMatricula] = useState('');
+  const [historialData, setHistorialData] = useState([]);
 
-  // Función para mostrar el modal con los detalles completos del mensaje
+  // Función reutilizable para obtener mensajes
+  const fetchMensajes = async () => {
+    try {
+      const data = await obtenerMisMensajes();
+      const mapped = data.map((msg, i) => ({
+        key: i,
+        remitente: msg.emisor,
+        mensaje: msg.mensaje,
+        fecha: new Date(msg.createdAt || Date.now()).toLocaleString()
+      }));
+      setHistorialData(mapped);
+    } catch (error: any) {
+      antMessage.error(error.message || "No se pudieron cargar los mensajes.");
+    }
+  };
+
+  useEffect(() => {
+    fetchMensajes();
+  }, []);
+
   const showFullMessage = (record) => {
     setModalMessage(record);
     setIsModalVisible(true);
   };
 
-  // Función para manejar el cierre del modal
   const handleCancel = () => {
     setIsModalVisible(false);
     setModalMessage(null);
   };
 
-  // Función para abrir el modal de añadir mensaje
   const showAddMessageModal = () => {
     setIsAddModalVisible(true);
   };
 
-  // Función para cerrar el modal de añadir mensaje
   const handleAddCancel = () => {
     setIsAddModalVisible(false);
     setMensaje('');
     setMatricula('');
   };
 
-  // Función para manejar el envío del mensaje
-  const handleSendMessage = () => {
-    console.log('Mensaje enviado:', mensaje);
-    console.log('Matrícula:', matricula);
-    setIsAddModalVisible(false);
-    setMensaje('');
-    setMatricula('');
+  const handleSendMessage = async () => {
+    try {
+      const data = await enviarMensaje(matricula, mensaje);
+      antMessage.success(data.message || "Mensaje enviado.");
+      setMensaje('');
+      setMatricula('');
+      setIsAddModalVisible(false);
+      fetchMensajes(); // 🔄 Refrescar historial al enviar mensaje
+    } catch (error: any) {
+      antMessage.error(error.message || "Error al enviar mensaje.");
+    }
   };
 
   const columns = [
@@ -68,19 +68,19 @@ const MainChat = () => {
       title: 'Remitente',
       dataIndex: 'remitente',
       key: 'remitente',
-      responsive: ['md'], // Only show on medium screens and larger
+      responsive: ['md']
     },
     {
       title: 'Mensaje',
       dataIndex: 'mensaje',
       key: 'mensaje',
-      ellipsis: true, // Add ellipsis for truncated text
+      ellipsis: true
     },
     {
       title: 'Fecha',
       dataIndex: 'fecha',
       key: 'fecha',
-      responsive: ['lg'], // Only show on large screens and larger
+      responsive: ['lg']
     },
     {
       title: 'Acciones',
@@ -89,38 +89,34 @@ const MainChat = () => {
         <Button type="link" onClick={() => showFullMessage(record)}>
           Ver Completo
         </Button>
-      ),
-    },
+      )
+    }
   ];
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <h2>Historial de Mensajes</h2>
 
-      {/* Botón para abrir el modal de añadir mensaje */}
       <div style={{ marginBottom: '20px' }}>
         <Button type="primary" onClick={showAddMessageModal}>
           Añadir Mensaje
         </Button>
       </div>
 
-      <Table 
-        dataSource={historialData} 
-        columns={columns} 
-        scroll={{ x: true }} // Enable horizontal scrolling on small screens
+      <Table
+        dataSource={historialData}
+        columns={columns}
+        scroll={{ x: true }}
         style={{ width: '100%' }}
       />
 
-      {/* Modal para enviar un mensaje */}
+      {/* Modal para Enviar Mensaje */}
       <Modal
         title="Enviar Mensaje"
         open={isAddModalVisible}
         onCancel={handleAddCancel}
         footer={null}
         width={800}
-        styles={{
-          body: { padding: '20px' },
-        }}
       >
         <Form onFinish={handleSendMessage}>
           <Form.Item
@@ -156,16 +152,13 @@ const MainChat = () => {
         </Form>
       </Modal>
 
-      {/* Modal para mostrar el mensaje completo */}
+      {/* Modal para Ver Detalles del Mensaje */}
       <Modal
         title="Mensaje Completo"
         open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         width={800}
-        styles={{
-          body: { padding: '20px' },
-        }}
       >
         {modalMessage && (
           <div>

@@ -1,4 +1,3 @@
-// api/auth/index.ts
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -34,11 +33,29 @@ export const loginUser = async (matricula: string, password: string, captcha: st
   const response = await axios.post<LoginResponse>(`${API_URL}/login`, { 
     matricula, 
     password, 
-    captcha });
+    captcha 
+  });
   return response.data;
 };
 
 export const registerUser = async (userData: RegisterData): Promise<RegisterResponse> => {
   const response = await axios.post<RegisterResponse>(`${API_URL}/createUser`, userData);
   return response.data;
+};
+
+// 👇 Nueva función añadida
+export interface User {
+  _id: string;
+  email: string;
+  matricula: number;
+  status: boolean;
+  names: string;
+  middleName: string;
+  lastName: string;
+  password: string;
+}
+
+export const getAllUsers = async (): Promise<User[]> => {
+  const response = await axios.get<{ userList: User[] }>(`${API_URL}/alumnos/getUser`);
+  return response.data.userList;
 };
