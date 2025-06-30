@@ -51,7 +51,7 @@ function HomePage() {
         </div>
       </Header>
 
-      <Content style={{ padding: '0 50px', marginTop: '64px' }}>
+      <Content style={{ padding: '0 50px', marginTop: '64px' , minHeight: "79vh"}}>
         <div className="site-layout-content">
           <Outlet />
         </div>
