@@ -77,40 +77,59 @@ const Alumnos = () => {
   );
 
   return (
-    <div style={{ padding: '16px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ 
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#fff',
+      padding: '16px',
+      boxSizing: 'border-box',
+      position: 'absolute',
+      top: '64px', // Adjust this value based on your menu height
+      left: 0,
+      overflow: 'auto'
+    }}>
       <div style={{ 
+        maxWidth: '1200px', 
+        margin: '0 auto',
         display: 'flex', 
-        justifyContent: 'space-between', 
-        marginBottom: '16px',
-        flexWrap: 'wrap',
-        gap: '16px'
+        flexDirection: 'column',
+        minHeight: 'calc(100vh - 64px)' // Adjust to account for menu height
       }}>
-        <h2 style={{ margin: 0 }}>Lista de Alumnos</h2>
-        <Space>
-          <Input
-            placeholder="Buscar alumnos..."
-            prefix={<SearchOutlined />}
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            style={{ width: 200 }}
-            allowClear
-          />
-        </Space>
-      </div>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          marginBottom: '16px',
+          flexWrap: 'wrap',
+          gap: '16px'
+        }}>
+          <h2 style={{ margin: 0 }}>Lista de Alumnos</h2>
+          <Space>
+            <Input
+              placeholder="Buscar alumnos..."
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ width: 200 }}
+              allowClear
+            />
+          </Space>
+        </div>
 
-      <Table
-        dataSource={filteredData}
-        columns={columns}
-        bordered
-        size="middle"
-        scroll={{ x: true }}
-        pagination={{
-          pageSizeOptions: ['5', '10', '20', '50'],
-          showSizeChanger: true,
-          showTotal: (total) => `Total ${total} alumnos`,
-        }}
-        rowClassName={(record) => record.estado === 'inactivo' ? 'row-inactive' : ''}
-      />
+        <Table
+          dataSource={filteredData}
+          columns={columns}
+          bordered
+          size="middle"
+          scroll={{ x: true }}
+          pagination={{
+            pageSizeOptions: ['5', '10', '20', '50'],
+            showSizeChanger: true,
+            showTotal: (total) => `Total ${total} alumnos`,
+          }}
+          rowClassName={(record) => record.estado === 'inactivo' ? 'row-inactive' : ''}
+          style={{ flex: 1 }}
+        />
+      </div>
 
       <style jsx global>{`
         .row-inactive {
