@@ -6,6 +6,8 @@ import AuthScreen from './modules/auth/AuthScreen';
 import Alumnos from './modules/dashboard/alumnos';
 import MainChat from './modules/chat/mainChat';
 import PrivateRoute from './components/PrivateRoute';
+import NotFound from './components/NotFound';
+import ServerError from './components/TestError500';
 
 const App: React.FC = () => {
   return (
@@ -14,6 +16,7 @@ const App: React.FC = () => {
         <Routes>
           {/* Rutas públicas */}
           <Route path="/auth" element={<AuthScreen />} />
+          <Route path="/server-error" element={<ServerError />} />
 
           {/* Rutas protegidas */}
           <Route
@@ -25,8 +28,11 @@ const App: React.FC = () => {
             }
           >
             <Route path="alumnos" element={<Alumnos />} />
+            {/* Rutas anidadas para el chat */}
             <Route path="chat" element={<MainChat />} />
           </Route>
+           {/* 🛑 RUTA 404 */}
+          <Route path="*" element={<NotFound />} />
 
         </Routes>
       </BrowserRouter>

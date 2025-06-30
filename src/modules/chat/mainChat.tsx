@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Input, Form, message as antMessage } from 'antd';
 import { enviarMensaje, obtenerMisMensajes } from '../../api/chat/chat';
+import { useNavigate } from 'react-router-dom';
 
 const MainChat = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -9,6 +10,7 @@ const MainChat = () => {
   const [mensaje, setMensaje] = useState('');
   const [matricula, setMatricula] = useState('');
   const [historialData, setHistorialData] = useState([]);
+  const navigate = useNavigate();
 
   // Función reutilizable para obtener mensajes
   const fetchMensajes = async () => {
@@ -59,7 +61,10 @@ const MainChat = () => {
       setIsAddModalVisible(false);
       fetchMensajes(); // 🔄 Refrescar historial al enviar mensaje
     } catch (error: any) {
-      antMessage.error(error.message || "Error al enviar mensaje.");
+      antMessage.error(error.message || 'No se pudo enviar el mensaje.');
+      if (error.status === 500) {
+        navigate('/server-error');
+      }
     }
   };
 
@@ -97,7 +102,7 @@ const MainChat = () => {
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       <h2>Historial de Mensajes</h2>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px', }}>
         <Button type="primary" onClick={showAddMessageModal}>
           Añadir Mensaje
         </Button>

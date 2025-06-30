@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import { Table, Input, Button, Space, Modal, Form, Tag } from 'antd';
-import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
-import { getAllUsers } from '../../api/auth/login'; // Ajusta la ruta si es necesario
+import { useNavigate } from 'react-router-dom';
+import { Table, Input, Space, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { getAllUsers } from '../../api/auth/login';
 
 const Alumnos = () => {
   const [alumnosData, setAlumnosData] = useState<any[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [form] = Form.useForm();
+  const navigate = useNavigate();
 
-  // Cargar alumnos desde la API
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
@@ -23,13 +23,16 @@ const Alumnos = () => {
           estado: user.status ? 'activo' : 'inactivo',
         }));
         setAlumnosData(mapped);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error al cargar alumnos:', error);
+        if (error.response?.status === 500) {
+          navigate('/server-error');
+        }
       }
     };
 
     fetchAlumnos();
-  }, []);
+  }, [navigate]);
 
   const columns = [
     {

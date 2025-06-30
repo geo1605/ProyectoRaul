@@ -1,6 +1,15 @@
 // src/api/chatApi.ts
 const API_URL = import.meta.env.VITE_API_URL;
 
+class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+    Object.setPrototypeOf(this, ApiError.prototype);
+  }
+}
+
 export const enviarMensaje = async (receptor: string, mensaje: string) => {
   const token = localStorage.getItem('token');
   const res = await fetch(`${API_URL}/chatmsj`, {
@@ -14,7 +23,7 @@ export const enviarMensaje = async (receptor: string, mensaje: string) => {
 
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(data.message || 'Error al enviar el mensaje');
+    throw new ApiError(data.message || 'Error al enviar el mensaje', res.status);
   }
   return data;
 };
