@@ -99,80 +99,98 @@ const MainChat = () => {
   ];
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2>Historial de Mensajes</h2>
+    <div style={{ 
+      minHeight: '100vh',
+      width: '100vw',
+      background: '#fff',
+      padding: '20px',
+      boxSizing: 'border-box',
+      position: 'absolute',
+      top: '64px', // Adjust based on your menu height
+      left: 0,
+      overflow: 'auto'
+    }}>
+      <div style={{ 
+        maxWidth: '1200px', 
+        margin: '0 auto',
+        display: 'flex', 
+        flexDirection: 'column',
+        minHeight: 'calc(100vh - 64px)' // Adjust to account for menu height
+      }}>
+        <h2>Historial de Mensajes</h2>
 
-      <div style={{ marginBottom: '20px', }}>
-        <Button type="primary" onClick={showAddMessageModal}>
-          Añadir Mensaje
-        </Button>
+        <div style={{ marginBottom: '20px' }}>
+          <Button type="primary" onClick={showAddMessageModal}>
+            Añadir Mensaje
+          </Button>
+        </div>
+
+        <Table
+          dataSource={historialData}
+          columns={columns}
+          scroll={{ x: true }}
+          style={{ flex: 1, width: '100%' }}
+        />
+
+        {/* Modal para Enviar Mensaje */}
+        <Modal
+          title="Enviar Mensaje"
+          open={isAddModalVisible}
+          onCancel={handleAddCancel}
+          footer={null}
+          width={800}
+        >
+          <Form onFinish={handleSendMessage}>
+            <Form.Item
+              label="Matrícula"
+              name="matricula"
+              rules={[{ required: true, message: 'Por favor ingresa una matrícula' }]}
+            >
+              <Input
+                value={matricula}
+                onChange={(e) => setMatricula(e.target.value)}
+                placeholder="Escribe la Matrícula"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Mensaje"
+              name="mensaje"
+              rules={[{ required: true, message: 'Por favor ingresa un mensaje' }]}
+            >
+              <Input.TextArea
+                value={mensaje}
+                onChange={(e) => setMensaje(e.target.value)}
+                rows={4}
+                placeholder="Escribe tu mensaje aquí"
+              />
+            </Form.Item>
+
+            <Form.Item>
+              <Button type="primary" htmlType="submit" block>
+                Enviar Mensaje
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+
+        {/* Modal para Ver Detalles del Mensaje */}
+        <Modal
+          title="Mensaje Completo"
+          open={isModalVisible}
+          onCancel={handleCancel}
+          footer={null}
+          width={800}
+        >
+          {modalMessage && (
+            <div>
+              <p><strong>Remitente:</strong> {modalMessage.remitente}</p>
+              <p><strong>Mensaje:</strong> {modalMessage.mensaje}</p>
+              <p><strong>Fecha:</strong> {modalMessage.fecha}</p>
+            </div>
+          )}
+        </Modal>
       </div>
-
-      <Table
-        dataSource={historialData}
-        columns={columns}
-        scroll={{ x: true }}
-        style={{ width: '100%' }}
-      />
-
-      {/* Modal para Enviar Mensaje */}
-      <Modal
-        title="Enviar Mensaje"
-        open={isAddModalVisible}
-        onCancel={handleAddCancel}
-        footer={null}
-        width={800}
-      >
-        <Form onFinish={handleSendMessage}>
-          <Form.Item
-            label="Matrícula"
-            name="matricula"
-            rules={[{ required: true, message: 'Por favor ingresa una matrícula' }]}
-          >
-            <Input
-              value={matricula}
-              onChange={(e) => setMatricula(e.target.value)}
-              placeholder="Escribe la Matrícula"
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Mensaje"
-            name="mensaje"
-            rules={[{ required: true, message: 'Por favor ingresa un mensaje' }]}
-          >
-            <Input.TextArea
-              value={mensaje}
-              onChange={(e) => setMensaje(e.target.value)}
-              rows={4}
-              placeholder="Escribe tu mensaje aquí"
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block>
-              Enviar Mensaje
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      {/* Modal para Ver Detalles del Mensaje */}
-      <Modal
-        title="Mensaje Completo"
-        open={isModalVisible}
-        onCancel={handleCancel}
-        footer={null}
-        width={800}
-      >
-        {modalMessage && (
-          <div>
-            <p><strong>Remitente:</strong> {modalMessage.remitente}</p>
-            <p><strong>Mensaje:</strong> {modalMessage.mensaje}</p>
-            <p><strong>Fecha:</strong> {modalMessage.fecha}</p>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
